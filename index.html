@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Search</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>    
+</head>
+<body>
+    <h2>Book Search</h2>
+    <input type="text" id="searchInput" placeholder="Enter book name, author, or price">
+    <button onclick="searchBooks()">Search</button>
+
+    <div id="searchResults"></div>
+
+    <!-- <div id="msg">Books data</div> -->
+
+    <script>  
+    
+        $(document).ready(function(){
+            readRecords();
+
+            $('#searchInput').on('keyup', function() {
+            
+                readRecords();
+            });
+
+
+        });
+    
+        function readRecords(sortColumn = 'Book_name', sortOrder = 'ASC'){
+            var inputVal = $('#searchInput').val();
+            $.ajax({
+                type: 'POST',
+                url: 'search.php',
+                data: { searchInput: inputVal, sortColumn: sortColumn, sortOrder: sortOrder },
+                success: function(response) {
+                    $('#searchResults').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            }); 
+        }
+    
+        // Function to handle column sorting
+
+        function sortColumn(columnName) {
+            // Check the current sort order of the column
+            var sortOrder = $('#sortOrder').val();
+
+            sortOrder = (sortOrder == 'ASC') ? 'DESC' : 'ASC';
+    
+            // Update the hidden input fields with the sort column and order
+            $('#sortColumn').val(columnName);
+            $('#sortOrder').val(sortOrder);
+    
+            // Trigger a search with sorting
+
+            console.log("sortOrder", sortOrder);
+            readRecords(columnName, sortOrder);
+            
+        }
+        </script>
+</body>
+</html>
